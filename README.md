@@ -266,43 +266,6 @@ curl -X POST http://localhost:5000/api/bookings \
 - **messages** - Сообщения чата
 - **visits** - Записи посещений для аналитики
 
-## 📁 Структура проекта
-
-```
-gym-crm-backend/
-├── app.py                      # Главный файл приложения
-├── config.py                   # Конфигурация
-├── database.py                 # Подключение к БД
-├── schemas.py                  # Схемы валидации
-├── seed.py                     # Скрипт инициализации БД
-├── requirements.txt            # Зависимости
-├── .env                        # Переменные окружения
-├── models/                     # Модели данных
-│   ├── user.py
-│   ├── membership.py
-│   ├── booking.py
-│   ├── feedback.py
-│   ├── message.py
-│   └── visit.py
-├── routes/                     # API endpoints
-│   ├── auth.py
-│   ├── users.py
-│   ├── memberships.py
-│   ├── bookings.py
-│   ├── feedback_messages.py
-│   └── analytics.py
-├── middleware/                 # Middleware
-│   └── auth.py
-└── utils/                      # Утилиты
-    └── file_handler.py
-```
-
-## 🔧 Разработка
-
-### Запуск в режиме разработки
-```bash
-python app.py
-```
 
 ### Использование с nodemon для auto-reload
 ```bash
@@ -375,6 +338,4 @@ const response = await fetch(`${API_URL}/auth/login`, {
 
 MIT License
 
----
 
-**Создано для Gym CRM App** 🏋️‍♂️
