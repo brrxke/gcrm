@@ -26,10 +26,7 @@ Gym CRM includes the following capabilities:
 - 💬 **Feedback & Messaging**  
   Built-in client feedback system and in-app messaging between trainers and members.
 
-- 📁 **File Uploads**  
-  Upload profile photos with automatic resizing and validation.
-
-> This set of features provides a solid basis for managing gym operations and can be extended further to include class scheduling, trainer management, automated reminders, etc. :contentReference[oaicite:0]{index=0}
+> This set of features provides a solid basis for managing gym operations and can be extended further to include class scheduling, trainer management, automated reminders, etc.
 
 ---
 
@@ -38,8 +35,8 @@ Gym CRM includes the following capabilities:
 ✅ **Backend:** Python + Flask  
 ✅ **Database:** MongoDB  
 ✅ **Authentication:** JWT  
-✅ **Frontend:** (Separate SPA or integration – not included by default)  
-✅ **Tools:** Docker support included  
+✅ **Frontend:** React + Vite  
+✅ **Tools:** Docker & Docker Compose support included  
 
 ---
 
@@ -51,89 +48,257 @@ Gym CRM was built to provide a **flexible, open source backend** for gym managem
 
 ## 📌 Installation & Quick Start
 
-### 1️⃣ Clone the Repository
+### Option 1: Docker Compose (Recommended)
+
+1️⃣ Clone the Repository
 
 ```bash
 git clone https://github.com/brrxke/gcrm.git
 cd gcrm
+```
 
-2️⃣ Install Dependencies
+2️⃣ Configure Environment Variables
 
-pip install -r requirements.txt
+Create a `.env` file in the project root:
 
-3️⃣ Environment Setup
+```bash
+# MongoDB Configuration
+MONGODB_URI=mongodb://localhost:27017/gym_crm
 
-Configure your .env file:
+# JWT Secret Key (CHANGE THIS IN PRODUCTION!)
+JWT_SECRET_KEY=dev-secret-key-12345
 
-FLASK_APP=app.py
+# JWT Token Expiration (in hours)
+JWT_ACCESS_TOKEN_EXPIRES=1
+
+# Flask Environment
 FLASK_ENV=development
-PORT=5000
+FLASK_APP=app.py
 
-MONGODB_URI=mongodb://localhost:27017/gcrm
-JWT_SECRET_KEY=your_secret_key
+# Server Configuration
+PORT=5001
+HOST=0.0.0.0
 
-4️⃣ Run MongoDB
+# CORS Configuration
+CORS_ORIGINS=http://localhost:8080,http://frontend:5173
 
-Start a local MongoDB instance (or use MongoDB Atlas).
-5️⃣ Start the Server
+# Frontend Configuration
+FRONTEND_PORT=8080
+FRONTEND_HOST=0.0.0.0
+```
 
+3️⃣ Start All Services
+
+```bash
+docker-compose up -d
+```
+
+This will start:
+- **MongoDB** on port 27017
+- **Backend API** on port 5001
+- **Frontend** on port 8080
+- **Mongo Express** on port 8081 (optional GUI for MongoDB)
+
+4️⃣ Access the Application
+
+- Frontend: http://localhost:8080
+- Backend API: http://localhost:5001
+- Mongo Express: http://localhost:8081
+
+### Option 2: Local Development
+
+1️⃣ Clone and Install Backend Dependencies
+
+```bash
+git clone https://github.com/brrxke/gcrm.git
+cd gcrm
+pip install -r requirements.txt
+```
+
+2️⃣ Install Frontend Dependencies
+
+```bash
+npm install
+```
+
+3️⃣ Configure Environment
+
+Create `.env` file as shown in Option 1.
+
+4️⃣ Start MongoDB
+
+```bash
+mongod
+```
+
+Or use MongoDB Atlas for cloud database.
+
+5️⃣ Start Backend
+
+```bash
 python app.py
+```
 
-The API will run at:
+Backend will be available at http://localhost:5001
 
-http://localhost:5000
+6️⃣ Start Frontend
 
-📘 API Documentation
+```bash
+npm run dev
+```
+
+Frontend will be available at http://localhost:8080
+
+---
+
+## 📘 API Documentation
 
 Full API specification can be found in:
 
-➡️ API_DOCUMENTATION.md
+➡️ **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 
-Example:
-
-# Register new user
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123"
-}
-
-🧪 Example Requests (cURL)
+### Example Requests (cURL)
 
 # Login
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:5001/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"john@example.com","password":"password123"}'
 
 # Get memberships
-curl http://localhost:5000/api/memberships
+curl http://localhost:5001/api/memberships
 
 # Create booking
-curl -X POST http://localhost:5000/api/bookings \
+curl -X POST http://localhost:5001/api/bookings \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"date":"2026-02-15","time":"10:00"}'
 
-🛣️ Roadmap
+---
+
+## 🐳 Docker Services
+
+### Services Included
+
+- **mongodb**: MongoDB 7.0 database
+- **backend**: Flask Python backend with auto MongoDB connection
+- **frontend**: React frontend served via nginx
+- **mongo-express**: Web-based MongoDB admin interface
+
+### Docker Commands
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Rebuild services
+docker-compose up -d --build
+
+# Stop and remove volumes
+docker-compose down -v
+```
+
+### Environment Variables
+
+All configuration is managed through a single `.env` file:
+
+- `MONGODB_URI` - MongoDB connection string
+- `JWT_SECRET_KEY` - Secret key for JWT tokens
+- `JWT_ACCESS_TOKEN_EXPIRES` - Token expiration time (hours)
+- `FLASK_ENV` - Flask environment (development/production)
+- `PORT` - Backend port
+- `HOST` - Backend host
+- `CORS_ORIGINS` - Allowed CORS origins
+- `FRONTEND_PORT` - Frontend port
+
+**Important:** Never commit `.env` files to version control (already in `.gitignore`)
+
+---
+
+## 🗄️ MongoDB Connection
+
+The application automatically connects to MongoDB on startup using the `MONGODB_URI` from `.env` file. Connection features:
+
+- ✅ Automatic connection on application start
+- ✅ Automatic collection and index creation on first run
+- ✅ Connection status logging
+- ✅ Health check verification
+- ✅ Graceful error handling
+
+### Collections
+
+The following collections are automatically created on first run:
+
+- `users` - User accounts (admin and clients)
+- `memberships` - Membership plans
+- `bookings` - Booking reservations
+- `feedback` - Customer feedback
+- `messages` - Internal messaging
+- `visits` - Visit tracking
+
+### Database Initialization
+
+**Automatic:** Collections and indexes are created automatically on the first run.
+
+**Manual (optional):** Run `python init_db.py` to manually initialize the database.
+
+**Test connection:** Run `python test_db_connection.py` to verify your MongoDB setup
+
+**Seed data:** Run `python seed.py` to populate the database with sample data (after initialization).
+
+The application automatically connects to MongoDB on startup using the `MONGODB_URI` from `.env` file. Connection features:
+
+- ✅ Automatic connection on application start
+- ✅ Automatic collection and index creation on first run
+- ✅ Connection status logging
+- ✅ Health check verification
+- ✅ Graceful error handling
+
+### Collections
+
+The following collections are automatically created on first run:
+
+- `users` - User accounts (admin and clients)
+- `memberships` - Membership plans
+- `bookings` - Booking reservations
+- `feedback` - Customer feedback
+- `messages` - Internal messaging
+- `visits` - Visit tracking
+
+### Database Initialization
+
+**Automatic:** Collections and indexes are created automatically on the first run.
+
+**Manual (optional):** Run `python init_db.py` to manually initialize the database.
+
+**Test connection:** Run `python test_db_connection.py` to verify your MongoDB setup
+
+**Seed data:** Run `python seed.py` to populate the database with sample data (after initialization).
+
+---
+
+## 🗺️ Roadmap
 
 Planned enhancements may include:
 
-    📆 Class scheduling & reservations
+- 📆 Class scheduling & reservations
+- 📧 Email/SMS notifications
+- 📌 Trainer management
+- 📊 Enhanced metrics dashboards
+- 💳 Payment integration
+- 📱 Mobile app
 
-    📧 Email/SMS notifications
+---
 
-    📲 Web or mobile frontend
-
-    📌 Trainer management
-
-    📊 Enhanced metrics dashboards
-
-🧩 Contributing
+## 🧩 Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
-📄 License
+
+## 📄 License
 
 This project is licensed under MIT License — see the LICENSE file for details.

@@ -1,0 +1,63 @@
+{
+  "common": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "fullName": "Full Name",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "language": "Language",
+    "support": "Support"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "startTransformation": "Start your transformation",
+    "dontHaveAccount": "Don't have an account?",
+    "registerHere": "Register here",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginHere": "Login here",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "creatingAccount": "Creating account...",
+    "emailPlaceholder": "your@email.com",
+    "passwordPlaceholder": "••••••",
+    "phonePlaceholder": "+1234567890",
+    "namePlaceholder": "John Doe",
+    "phoneOptional": "Phone (optional)",
+    "invalidEmailOrPassword": "Invalid email or password",
+    "emailAlreadyRegistered": "Email already registered",
+    "registrationFailed": "Registration failed",
+    "loginFailed": "Login failed",
+    "passwordRequired": "Password required",
+    "newPasswordRequired": "New password required",
+    "passwordMinLength": "Password must be at least 6 characters"
+  },
+  "layout": {
+    "dashboard": "Dashboard",
+    "members": "Members",
+    "bookings": "Bookings",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "admin": "Administrator",
+    "client": "Client"
+  },
+  "support": {
+    "title": "Technical Support",
+    "description": "Need help? Contact our technical support",
+    "contactUs": "Contact Us",
+    "testSupportLink": "Test support link (test)",
+    "responseTime": "Response time: up to 24 hours",
+    "supportEmail": "support@gym-crm.com",
+    "supportPhone": "+1234567890"
+  }
+}

@@ -6,6 +6,7 @@ import { UserProfile } from './client/UserProfile';
 import { TrainerChat } from './client/TrainerChat';
 import { TrialBooking } from './client/TrialBooking';
 import { FeedbackSurvey } from './client/FeedbackSurvey';
+import { LanguageSelector } from '../LanguageSelector';
 
 interface ClientLayoutProps {
   onLogout: () => void;
@@ -37,9 +38,12 @@ export function ClientLayout({ onLogout }: ClientLayoutProps) {
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-black border-b border-border z-50">
         <div className="flex items-center justify-between p-4">
           <h1 className="uppercase tracking-wider text-primary">APEX GYM</h1>
-          <button onClick={onLogout} className="text-muted-foreground hover:text-secondary">
-            <LogOut className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+            <button onClick={onLogout} className="text-muted-foreground hover:text-secondary">
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 

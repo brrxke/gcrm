@@ -4,6 +4,7 @@ import { AdminDashboard } from './admin/AdminDashboard';
 import { ClientManagement } from './admin/ClientManagement';
 import { MembershipManagement } from './admin/MembershipManagement';
 import { Analytics } from './admin/Analytics';
+import { LanguageSelector } from '../LanguageSelector';
 import { useState } from 'react';
 
 interface AdminLayoutProps {
@@ -31,7 +32,7 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Mobile Header */}
+{/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-card border-b border-border z-50">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
@@ -39,10 +40,18 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="text-white"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-6 h-5" />
             </button>
             <h1 className="uppercase tracking-wider text-primary">Admin Panel</h1>
           </div>
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+            <button onClick={onLogout} className="text-muted-foreground hover:text-secondary">
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
           <button onClick={onLogout} className="text-muted-foreground hover:text-secondary">
             <LogOut className="w-5 h-5" />
           </button>

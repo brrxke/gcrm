@@ -1,0 +1,63 @@
+{
+  "common": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "phone": "Телефон",
+    "fullName": "Полное имя",
+    "submit": "Отправить",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успешно",
+    "language": "Язык",
+    "support": "Поддержка"
+  },
+  "auth": {
+    "welcomeBack": "Добро пожаловать",
+    "startTransformation": "Начните своё преображение",
+    "dontHaveAccount": "Нет аккаунта?",
+    "registerHere": "Зарегистрироваться здесь",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "loginHere": "Войти здесь",
+    "signIn": "Войти",
+    "signUp": "Зарегистрироваться",
+    "creatingAccount": "Создание аккаунта...",
+    "emailPlaceholder": "ваш@email.com",
+    "passwordPlaceholder": "••••••",
+    "phonePlaceholder": "+1234567890",
+    "namePlaceholder": "Иван Иванов",
+    "phoneOptional": "Телефон (необязательно)",
+    "invalidEmailOrPassword": "Неверный email или пароль",
+    "emailAlreadyRegistered": "Email уже зарегистрирован",
+    "registrationFailed": "Ошибка регистрации",
+    "loginFailed": "Ошибка входа",
+    "passwordRequired": "Требуется пароль",
+    "newPasswordRequired": "Требуется новый пароль",
+    "passwordMinLength": "Пароль должен быть минимум 6 символов"
+  },
+  "layout": {
+    "dashboard": "Панель управления",
+    "members": "Участники",
+    "bookings": "Бронирования",
+    "analytics": "Аналитика",
+    "settings": "Настройки",
+    "logout": "Выйти",
+    "welcome": "Добро пожаловать",
+    "admin": "Администратор",
+    "client": "Клиент"
+  },
+  "support": {
+    "title": "Техническая поддержка",
+    "description": "Нужна помощь? Свяжитесь с нашей техподдержкой",
+    "contactUs": "Связаться с нами",
+    "testSupportLink": "Проверить техподдержку (тест)",
+    "responseTime": "Время ответа: до 24 часов",
+    "supportEmail": "support@gym-crm.com",
+    "supportPhone": "+1234567890"
+  }
+}

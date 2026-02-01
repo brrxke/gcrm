@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Dumbbell, Mail, Lock, Loader2 } from 'lucide-react';
+import { Dumbbell, Mail, Lock, Loader2, Phone, User } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
 import { LanguageSelector } from './LanguageSelector';
 
-interface LoginPageProps {
-  onLogin: (email: string, password: string) => Promise<void>;
+interface RegisterPageProps {
+  onRegister: (email: string, password: string, name: string, phone?: string) => Promise<void>;
 }
 
-export function LoginPage({ onLogin }: LoginPageProps) {
+export function RegisterPage({ onRegister }: RegisterPageProps) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { t } = useI18n();
@@ -23,9 +25,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     setIsLoading(true);
 
     try {
-      await onLogin(email, password);
+      await onRegister(name, email, password, phone);
     } catch (err: any) {
-      setError(err.message || t('auth', 'loginFailed'));
+      setError(err.message || t('auth', 'registrationFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +45,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <Dumbbell className="w-8 h-8 text-black" />
           </div>
           <h1 className="text-3xl mb-2 text-white uppercase tracking-wider">APEX GYM</h1>
-          <p className="text-muted-foreground">{t('auth', 'welcomeBack')}</p>
+          <p className="text-muted-foreground">{t('auth', 'startTransformation')}</p>
         </div>
 
         {error && (
@@ -53,6 +55,23 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-white">{t('common', 'fullName')}</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                id="name"
+                type="text"
+                placeholder={t('auth', 'namePlaceholder')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="pl-10 bg-input border-border text-white placeholder:text-muted-foreground"
+                required
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white">{t('common', 'email')}</Label>
             <div className="relative">
@@ -65,6 +84,22 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 bg-input border-border text-white placeholder:text-muted-foreground"
                 required
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-white">{t('common', 'phone')} ({t('auth', 'phoneOptional')})</Label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                id="phone"
+                type="tel"
+                placeholder={t('auth', 'phonePlaceholder')}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="pl-10 bg-input border-border text-white placeholder:text-muted-foreground"
                 disabled={isLoading}
               />
             </div>
@@ -95,19 +130,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Loading...
+                {t('auth', 'creatingAccount')}
               </>
             ) : (
-              t('auth', 'signIn')
+              t('auth', 'signUp')
             )}
           </Button>
 
           <div className="text-center pt-4">
             <a
-              href="/register"
+              href="/login"
               className="text-sm text-primary hover:underline transition-colors"
             >
-              {t('auth', 'dontHaveAccount')} {t('auth', 'registerHere')}
+              {t('auth', 'alreadyHaveAccount')} {t('auth', 'loginHere')}
             </a>
           </div>
         </form>

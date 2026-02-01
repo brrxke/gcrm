@@ -3,42 +3,46 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from config import config
 from database import init_db
+from db_init import init_collections, check_first_run
 import os
 
 def create_app(config_name='development'):
-    """Application factory"""
     app = Flask(__name__)
-    
-    # Load configuration
     app.config.from_object(config[config_name])
     
-    # Initialize CORS
     CORS(app, resources={
         r"/api/*": {
-            "origins": ["http://localhost:5173", "http://localhost:3000"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
-            "allow_headers": ["Content-Type", "Authorization"]
+            "origins": app.config['CORS_ORIGINS'],
+            "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True
         }
     })
     
-    # Initialize JWT
     jwt = JWTManager(app)
     
-    # Initialize database
+    print("\n🔌 Connecting to MongoDB...")
     if not init_db(app):
-        print("Warning: Could not connect to database")
+        print("❌ Warning: Could not connect to database")
+        print("   Please check your MongoDB connection in .env file")
+        print("   MONGODB_URI:", os.getenv('MONGODB_URI', 'Not set'))
+    else:
+        print("📊 Database connection established")
+        
+        if check_first_run():
+            print("\n🔧 First run detected. Initializing collections...")
+            init_collections()
+        else:
+            print("\n✅ Collections already exist. Skipping initialization.")
     
-    # Create upload folders
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'profiles'), exist_ok=True)
-    
-    # Register blueprints
-    from routes.auth import auth_bp
-    from routes.users import users_bp
-    from routes.memberships import memberships_bp
-    from routes.bookings import bookings_bp
-    from routes.feedback_messages import feedback_bp, messages_bp
-    from routes.analytics import analytics_bp
+from routes.auth import auth_bp
+from routes.users import users_bp
+from routes.memberships import memberships_bp
+from routes.bookings import bookings_bp
+from routes.feedback_messages import feedback_bp, messages_bp
+from routes.analytics import analytics_bp
+from routes.telegram.routes import telegram_bp
+from routes.telegram.routes import telegram_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(users_bp, url_prefix='/api/users')
@@ -47,11 +51,15 @@ def create_app(config_name='development'):
     app.register_blueprint(feedback_bp, url_prefix='/api/feedback')
     app.register_blueprint(messages_bp, url_prefix='/api/messages')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
+    app.register_blueprint(telegram_bp, url_prefix='/api/telegram')
     
-    # Error handlers
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({'error': 'Resource not found'}), 404
+    
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({'error': 'Method not allowed'}), 405
     
     @app.errorhandler(500)
     def internal_error(error):
@@ -69,7 +77,6 @@ def create_app(config_name='development'):
     def missing_token_callback(error):
         return jsonify({'error': 'Missing authorization token'}), 401
     
-    # Health check endpoint
     @app.route('/api/health', methods=['GET'])
     def health_check():
         return jsonify({
@@ -77,7 +84,10 @@ def create_app(config_name='development'):
             'message': 'Gym CRM API is running'
         }), 200
     
-    # Root endpoint
+    @app.route('/api/<path:path>', methods=['OPTIONS'])
+    def handle_options(path):
+        return '', 204
+    
     @app.route('/', methods=['GET'])
     def root():
         return jsonify({
@@ -99,4 +109,4 @@ def create_app(config_name='development'):
 if __name__ == '__main__':
     app = create_app()
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)

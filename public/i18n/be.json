@@ -1,0 +1,63 @@
+{
+  "common": {
+    "login": "Увайсці",
+    "register": "Рэгістрацыя",
+    "email": "Email",
+    "password": "Пароль",
+    "phone": "Тэлефон",
+    "fullName": "Поўнае імя",
+    "submit": "Адправіць",
+    "cancel": "Адмена",
+    "save": "Захаваць",
+    "delete": "Выдаліць",
+    "edit": "Рэдагаваць",
+    "loading": "Загрузка...",
+    "error": "Памылка",
+    "success": "Паспяхова",
+    "language": "Мова",
+    "support": "Падтрымка"
+  },
+  "auth": {
+    "welcomeBack": "Вітаем назад",
+    "startTransformation": "Пачніце сваё пераўтварэнне",
+    "dontHaveAccount": "Няма акаўнта?",
+    "registerHere": "Зарэгіструйцеся тут",
+    "alreadyHaveAccount": "Ужо ёсць акаўнт?",
+    "loginHere": "Увайсці тут",
+    "signIn": "Увайсці",
+    "signUp": "Зарэгіструйцеся",
+    "creatingAccount": "Стварэнне акаўнта...",
+    "emailPlaceholder": "ваш@email.com",
+    "passwordPlaceholder": "••••••",
+    "phonePlaceholder": "+375291234567",
+    "namePlaceholder": "Іван Іваноў",
+    "phoneOptional": "Тэлефон (неабавязковы)",
+    "invalidEmailOrPassword": "Няправы email ці пароль",
+    "emailAlreadyRegistered": "Email ужо зарэгістраваны",
+    "registrationFailed": "Памылка рэгістрацыі",
+    "loginFailed": "Памылка ўваходу",
+    "passwordRequired": "Патрабуецца пароль",
+    "newPasswordRequired": "Патрабуецца новы пароль",
+    "passwordMinLength": "Пароль павін быць мінімум 6 сімвалаў"
+  },
+  "layout": {
+    "dashboard": "Панэль кіравання",
+    "members": "Удзельнікі",
+    "bookings": "Браніраванні",
+    "analytics": "Аналітыка",
+    "settings": "Налады",
+    "logout": "Выйсці",
+    "welcome": "Вітаем",
+    "admin": "Адміністратар",
+    "client": "Кліент"
+  },
+  "support": {
+    "title": "Тэхнічная падтрымка",
+    "description": "Патрэбна дапамога? Звяжыцеся з нашай тэхнічнай падтрымкай",
+    "contactUs": "Звязацца з намі",
+    "testSupportLink": "Праверыць тэхнічную падтрымку (тэст)",
+    "responseTime": "Час адказу: да 24 гадзін",
+    "supportEmail": "support@gym-crm.com",
+    "supportPhone": "+375291234567"
+  }
+}
