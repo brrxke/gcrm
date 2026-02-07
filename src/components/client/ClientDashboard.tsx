@@ -1,20 +1,38 @@
+import { useEffect, useState } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Users, Clock, CreditCard, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../context/I18nContext';
+import { authApi } from '../../api/auth';
 
 export function ClientDashboard() {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const [profile, setProfile] = useState<any>(authApi.getUser());
 
-  // Mock data
-  const membershipData = {
-    type: 'PREMIUM',
-    expiresIn: 45,
-    status: 'active'
-  };
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const response = await authApi.getCurrentUser();
+        const user = response?.user || response;
+        if (user) {
+          setProfile(user);
+        }
+      } catch {
+        // Keep localStorage fallback
+      }
+    };
+    loadProfile();
+  }, []);
+
+  const membershipType = profile?.membership || t('clientDashboard', 'noMembership');
+  const membershipStatus = profile?.membership_status || 'inactive';
+  const expiryDate = profile?.expiry_date ? new Date(profile.expiry_date) : null;
+  const daysUntilExpiry = expiryDate
+    ? Math.max(0, Math.ceil((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null;
 
   const occupancy = 72;
   const hours = { open: '05:00', close: '23:00' };
@@ -27,14 +45,18 @@ export function ClientDashboard() {
           <div className="flex items-start justify-between mb-4">
             <div>
               <div className="text-black/60 text-sm mb-1">{t('clientDashboard', 'membership')}</div>
-              <h2 className="text-3xl text-black">{membershipData.type}</h2>
+              <h2 className="text-3xl text-black">{membershipType}</h2>
             </div>
-            <Badge className="bg-black text-primary border-0">{t('clientDashboard', 'active')}</Badge>
+            <Badge className="bg-black text-primary border-0">
+              {membershipStatus === 'active' ? t('clientDashboard', 'active') : t('clientDashboard', 'inactive')}
+            </Badge>
           </div>
           <div className="flex items-center gap-2 text-black/80 mt-6">
             <Clock className="w-4 h-4" />
             <span className="text-sm">
-              {t('clientDashboard', 'expiresIn')} {membershipData.expiresIn} {t('clientDashboard', 'days')}
+              {daysUntilExpiry !== null
+                ? `${t('clientDashboard', 'expiresIn')} ${daysUntilExpiry} ${t('clientDashboard', 'days')}`
+                : t('clientDashboard', 'noExpiry')}
             </span>
           </div>
         </Card>
@@ -82,19 +104,23 @@ export function ClientDashboard() {
         <div className="space-y-3">
           <h3 className="text-white uppercase tracking-wider text-sm">{t('clientDashboard', 'quickActions')}</h3>
           <div className="grid md:grid-cols-2 gap-3">
-            <Button 
-              onClick={() => navigate('/client/book')}
-              className="bg-primary hover:bg-primary/90 text-black h-14 justify-start px-6"
-            >
-              <Calendar className="w-5 h-5 mr-3" />
-              {t('clientDashboard', 'bookTrial')}
-            </Button>
+            {membershipStatus !== 'active' && (
+              <Button 
+                onClick={() => navigate('/client/book')}
+                className="bg-primary hover:bg-primary/90 text-black h-14 justify-start px-6"
+              >
+                <Calendar className="w-5 h-5 mr-3" />
+                {t('clientDashboard', 'bookTrial')}
+              </Button>
+            )}
             <Button 
               onClick={() => navigate('/client/plans')}
               className="bg-secondary hover:bg-secondary/90 text-white h-14 justify-start px-6"
             >
               <CreditCard className="w-5 h-5 mr-3" />
-              {t('clientDashboard', 'upgradeMembership')}
+              {membershipStatus === 'active'
+                ? t('clientDashboard', 'manageMembership')
+                : t('clientDashboard', 'addMembership')}
             </Button>
           </div>
         </div>

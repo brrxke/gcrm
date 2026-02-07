@@ -30,7 +30,18 @@ export const authApi = {
     // Save token to localStorage
     if (response.access_token) {
       localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      const user = response.user || {};
+      localStorage.setItem('user', JSON.stringify({
+        id: user._id || user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        age: user.age,
+        role: user.role,
+        membership: user.membership,
+        membership_status: user.membership_status,
+        expiry_date: user.expiry_date,
+      }));
     }
     
     return response;
@@ -43,13 +54,33 @@ export const authApi = {
     if (response.access_token) {
       localStorage.setItem('token', response.access_token);
       localStorage.setItem('user', JSON.stringify({
+        id: response.user_id,
         name: data.name,
         email: data.email,
+        phone: data.phone,
         age: data.age,
+        role: 'client',
+        membership: null,
+        membership_status: 'inactive',
+        expiry_date: null,
       }));
     }
     
     return response;
+  },
+
+  async updateCurrentUser(
+    userId: string,
+    data: {
+      name?: string;
+      phone?: string;
+      age?: number;
+      membership?: string | null;
+      membership_status?: 'active' | 'expired' | 'trial' | 'inactive';
+      expiry_date?: string | null;
+    }
+  ): Promise<any> {
+    return apiClient.put(`/users/${userId}`, data);
   },
 
   async logout(): Promise<void> {

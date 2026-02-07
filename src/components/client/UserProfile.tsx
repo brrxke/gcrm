@@ -22,7 +22,12 @@ export function UserProfile() {
   const daysUntilExpiry = 45;
   const referralCode = 'IRON-X7K2M';
   const { t } = useI18n();
-  const [profile, setProfile] = useState<{ name?: string; email?: string; phone?: string; age?: number } | null>(authApi.getUser());
+  const [profile, setProfile] = useState<{ id?: string; name?: string; email?: string; phone?: string; age?: number } | null>(authApi.getUser());
+  const [name, setName] = useState(profile?.name || '');
+  const [email, setEmail] = useState(profile?.email || '');
+  const [phone, setPhone] = useState(profile?.phone || '');
+  const [age, setAge] = useState(profile?.age ? String(profile?.age) : '');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -30,12 +35,18 @@ export function UserProfile() {
         const response = await authApi.getCurrentUser();
         const user = response?.user || response;
         if (user) {
-          setProfile({
+          const nextProfile = {
+            id: user._id || user.id,
             name: user.name,
             email: user.email,
             phone: user.phone,
             age: user.age,
-          });
+          };
+          setProfile(nextProfile);
+          setName((prev) => prev || nextProfile.name || '');
+          setEmail((prev) => prev || nextProfile.email || '');
+          setPhone((prev) => prev || nextProfile.phone || '');
+          setAge((prev) => prev || (nextProfile.age !== undefined ? String(nextProfile.age) : ''));
         }
       } catch {
         // Keep localStorage fallback if API is unavailable.
@@ -43,6 +54,36 @@ export function UserProfile() {
     };
     loadProfile();
   }, []);
+
+  const handleSave = async () => {
+    if (!profile?.id) {
+      return;
+    }
+    const parsedAge = age ? Number(age) : undefined;
+    const payload = {
+      name,
+      phone,
+      age: Number.isNaN(parsedAge) ? undefined : parsedAge,
+    };
+    try {
+      setIsSaving(true);
+      const response = await authApi.updateCurrentUser(profile.id, payload);
+      const updatedUser = response?.user || response;
+      if (updatedUser) {
+        const stored = authApi.getUser() || {};
+        const next = {
+          ...stored,
+          name: updatedUser.name ?? payload.name,
+          phone: updatedUser.phone ?? payload.phone,
+          age: updatedUser.age ?? payload.age,
+        };
+        localStorage.setItem('user', JSON.stringify(next));
+        setProfile((prev) => ({ ...prev, ...next }));
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black p-4 lg:p-8 pb-24 lg:pb-8">
@@ -59,7 +100,8 @@ export function UserProfile() {
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="name"
-                  defaultValue={profile?.name || ''}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="pl-10 bg-input border-border text-white"
                 />
               </div>
@@ -71,7 +113,8 @@ export function UserProfile() {
                 <Input
                   id="email"
                   type="email"
-                  defaultValue={profile?.email || ''}
+                  value={email}
+                  readOnly
                   className="pl-10 bg-input border-border text-white"
                 />
               </div>
@@ -82,7 +125,8 @@ export function UserProfile() {
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="phone"
-                  defaultValue={profile?.phone || ''}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   className="pl-10 bg-input border-border text-white"
                 />
               </div>
@@ -96,14 +140,19 @@ export function UserProfile() {
                   type="number"
                   min={12}
                   max={120}
-                  defaultValue={profile?.age ?? ''}
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
                   className="pl-10 bg-input border-border text-white"
                 />
               </div>
             </div>
           </div>
-          <Button className="mt-6 bg-primary hover:bg-primary/90 text-black">
-            {t('client', 'updateProfile')}
+          <Button
+            className="mt-6 bg-primary hover:bg-primary/90 text-black"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? t('common', 'loading') : t('client', 'updateProfile')}
           </Button>
         </Card>
 

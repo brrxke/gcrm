@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Check, X } from 'lucide-react';
 import { useI18n } from '../../context/I18nContext';
+import { authApi } from '../../api/auth';
 
 const plans = [
   {
@@ -10,6 +12,7 @@ const plans = [
     name: 'STARTER',
     price: 29,
     period: 'month',
+    durationMonths: 1,
     popular: false,
     features: [
       { key: 'featureGymAccess', included: true },
@@ -26,6 +29,7 @@ const plans = [
     name: 'PREMIUM',
     price: 59,
     period: 'month',
+    durationMonths: 1,
     popular: true,
     features: [
       { key: 'featureGymAccess', included: true },
@@ -42,6 +46,7 @@ const plans = [
     name: 'ELITE',
     price: 99,
     period: 'month',
+    durationMonths: 1,
     popular: false,
     features: [
       { key: 'featureGymAccess', included: true },
@@ -57,9 +62,47 @@ const plans = [
 
 export function MembershipPlans() {
   const { t } = useI18n();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handlePurchase = (planName: string) => {
-    alert(t('membershipPlans', 'purchaseAlert').replace('{plan}', planName));
+  useEffect(() => {
+    const currentUser = authApi.getUser();
+    setUserId(currentUser?.id || null);
+  }, []);
+
+  const handlePurchase = async (planName: string, durationMonths: number) => {
+    if (!userId) {
+      alert(t('membershipPlans', 'noUser'));
+      return;
+    }
+    const now = new Date();
+    const expiry = new Date(now);
+    expiry.setMonth(expiry.getMonth() + durationMonths);
+
+    try {
+      setIsSaving(true);
+      const response = await authApi.updateCurrentUser(userId, {
+        membership: planName,
+        membership_status: 'active',
+        expiry_date: expiry.toISOString(),
+      });
+      const updatedUser = response?.user || response;
+      if (updatedUser) {
+        const stored = authApi.getUser() || {};
+        const next = {
+          ...stored,
+          membership: updatedUser.membership ?? planName,
+          membership_status: updatedUser.membership_status ?? 'active',
+          expiry_date: updatedUser.expiry_date ?? expiry.toISOString(),
+        };
+        localStorage.setItem('user', JSON.stringify(next));
+      }
+      alert(t('membershipPlans', 'purchaseSuccess').replace('{plan}', planName));
+    } catch {
+      alert(t('membershipPlans', 'purchaseError'));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -109,7 +152,8 @@ export function MembershipPlans() {
               </div>
 
               <Button
-                onClick={() => handlePurchase(plan.name)}
+                onClick={() => handlePurchase(plan.name, plan.durationMonths)}
+                disabled={isSaving}
                 className={`w-full ${
                   plan.popular
                     ? 'bg-primary hover:bg-primary/90 text-black'
