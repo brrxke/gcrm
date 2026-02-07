@@ -8,7 +8,9 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      MONGO_INITDB_DATABASE: gym_crm
+      MONGO_INITDB_DATABASE: ${MONGODB_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     networks:
       - gcrm-network
     healthcheck:
@@ -26,9 +28,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5001
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${AUTH_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/auth/app.py"]
     depends_on:
@@ -46,9 +48,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5002
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${USERS_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/users/app.py"]
     depends_on:
@@ -66,9 +68,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5003
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${MEMBERSHIPS_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/memberships/app.py"]
     depends_on:
@@ -86,9 +88,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5004
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${BOOKINGS_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/bookings/app.py"]
     depends_on:
@@ -106,9 +108,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5005
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${FEEDBACK_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/feedback/app.py"]
     depends_on:
@@ -126,9 +128,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5006
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${ANALYTICS_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/analytics/app.py"]
     depends_on:
@@ -146,9 +148,9 @@ services:
     env_file:
       - .env
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gym_crm
-      - CORS_ORIGINS=http://localhost:8080
-      - PORT=5007
+      - MONGODB_URI=${MONGODB_URI}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - PORT=${TELEGRAM_PORT}
       - PYTHONPATH=/app
     command: ["python", "apps/services/telegram/app.py"]
     depends_on:
@@ -196,8 +198,12 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
-      ME_CONFIG_BASICAUTH: "false"
+      ME_CONFIG_MONGODB_URL: ${MONGODB_URI}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_BASICAUTH: ${ME_CONFIG_BASICAUTH}
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
     depends_on:
       - mongodb
     networks:

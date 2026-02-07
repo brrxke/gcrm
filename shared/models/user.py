@@ -122,3 +122,19 @@ class User:
             'expired_members': stats.get('expired', 0),
             'trial_members': stats.get('trial', 0)
         }
+
+    @staticmethod
+    def count_admins():
+        db = get_db()
+        collection = db.get_collection(User.collection_name)
+        return collection.count_documents({'role': 'admin'})
+
+    @staticmethod
+    def set_role(user_id, role):
+        db = get_db()
+        collection = db.get_collection(User.collection_name)
+        result = collection.update_one(
+            {'_id': ObjectId(user_id)},
+            {'$set': {'role': role, 'updated_at': datetime.utcnow()}}
+        )
+        return result.modified_count > 0

@@ -134,3 +134,28 @@ def get_user_stats():
         return jsonify(stats), 200
     except Exception:
         return jsonify({'error': 'Failed to get stats'}), 500
+
+@users_bp.route('/<user_id>/role', methods=['PUT'])
+@admin_required
+def update_user_role(user_id):
+    try:
+        data = request.json or {}
+        role = data.get('role')
+        if role not in ['admin', 'client']:
+            return jsonify({'error': 'Invalid role'}), 400
+
+        target_user = User.find_by_id(user_id)
+        if not target_user:
+            return jsonify({'error': 'User not found'}), 404
+
+        if role != 'admin' and target_user.get('role') == 'admin' and User.count_admins() <= 1:
+            return jsonify({'error': 'Cannot remove last admin'}), 400
+
+        success = User.set_role(user_id, role)
+        if not success:
+            return jsonify({'error': 'Failed to update role'}), 500
+
+        user = User.find_by_id(user_id)
+        return jsonify({'message': 'Role updated successfully', 'user': user}), 200
+    except Exception:
+        return jsonify({'error': 'Failed to update role'}), 500

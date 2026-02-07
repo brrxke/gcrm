@@ -4,6 +4,7 @@ from shared.models.user import User
 from shared.schemas import user_registration_schema, user_login_schema
 from marshmallow import ValidationError
 from shared.middleware.auth import jwt_required_custom
+import os
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -11,6 +12,7 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     try:
         data = user_registration_schema.load(request.json)
+        data['role'] = 'client'
         existing_user = User.find_by_email(data['email'])
         if existing_user:
             return jsonify({'error': 'Email already registered'}), 400
@@ -28,6 +30,39 @@ def register():
         return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
     except Exception:
         return jsonify({'error': 'Registration failed'}), 500
+
+@auth_bp.route('/setup-admin', methods=['POST'])
+def setup_admin():
+    try:
+        setup_token = os.getenv('ADMIN_SETUP_TOKEN', '')
+        provided_token = request.headers.get('X-Admin-Setup-Token', '')
+        if not setup_token or provided_token != setup_token:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        if User.count_admins() > 0:
+            return jsonify({'error': 'Admin already exists'}), 409
+
+        data = user_registration_schema.load(request.json)
+        data['role'] = 'admin'
+
+        existing_user = User.find_by_email(data['email'])
+        if existing_user:
+            return jsonify({'error': 'Email already registered'}), 400
+
+        user_id = User.create(data)
+        access_token = create_access_token(identity=user_id)
+        user = User.find_by_id(user_id)
+
+        return jsonify({
+            'message': 'Admin created successfully',
+            'access_token': access_token,
+            'user': user
+        }), 201
+
+    except ValidationError as err:
+        return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
+    except Exception:
+        return jsonify({'error': 'Admin setup failed'}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
