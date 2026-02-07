@@ -30,7 +30,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5001
       - PYTHONPATH=/app
-    command: ["python", "services/auth/app.py"]
+    command: ["python", "apps/services/auth/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -50,7 +50,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5002
       - PYTHONPATH=/app
-    command: ["python", "services/users/app.py"]
+    command: ["python", "apps/services/users/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5003
       - PYTHONPATH=/app
-    command: ["python", "services/memberships/app.py"]
+    command: ["python", "apps/services/memberships/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -90,7 +90,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5004
       - PYTHONPATH=/app
-    command: ["python", "services/bookings/app.py"]
+    command: ["python", "apps/services/bookings/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -110,7 +110,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5005
       - PYTHONPATH=/app
-    command: ["python", "services/feedback/app.py"]
+    command: ["python", "apps/services/feedback/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -130,7 +130,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5006
       - PYTHONPATH=/app
-    command: ["python", "services/analytics/app.py"]
+    command: ["python", "apps/services/analytics/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -150,7 +150,7 @@ services:
       - CORS_ORIGINS=http://localhost:8080
       - PORT=5007
       - PYTHONPATH=/app
-    command: ["python", "services/telegram/app.py"]
+    command: ["python", "apps/services/telegram/app.py"]
     depends_on:
       mongodb:
         condition: service_healthy
@@ -184,8 +184,6 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
-    environment:
-      - BACKEND_URL=http://gateway:5000
     depends_on:
       - gateway
     networks:

@@ -1,6 +1,7 @@
 import { Card } from '../ui/card';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Users, TrendingUp, DollarSign, Activity } from 'lucide-react';
+import { useI18n } from '../../context/I18nContext';
 
 const visitData = [
   { date: 'Mon', visits: 145 },
@@ -30,30 +31,31 @@ const membershipDistribution = [
 ];
 
 export function AdminDashboard() {
+  const { t } = useI18n();
   const stats = [
     {
-      label: 'Active Members',
+      label: t('adminDashboard', 'activeMembers'),
       value: '435',
       change: '+12%',
       icon: Users,
       color: 'text-primary'
     },
     {
-      label: 'Monthly Revenue',
+      label: t('adminDashboard', 'monthlyRevenue'),
       value: '$24,580',
       change: '+8%',
       icon: DollarSign,
       color: 'text-primary'
     },
     {
-      label: 'Today\'s Visits',
+      label: t('adminDashboard', 'todaysVisits'),
       value: '198',
       change: '+5%',
       icon: Activity,
       color: 'text-primary'
     },
     {
-      label: 'Expiring Soon',
+      label: t('adminDashboard', 'expiringSoon'),
       value: '23',
       change: '-2%',
       icon: TrendingUp,
@@ -65,8 +67,8 @@ export function AdminDashboard() {
     <div className="min-h-screen bg-black p-4 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl text-white uppercase tracking-wider">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of gym performance</p>
+          <h1 className="text-3xl text-white uppercase tracking-wider">{t('adminDashboard', 'title')}</h1>
+          <p className="text-muted-foreground">{t('adminDashboard', 'subtitle')}</p>
         </div>
 
         {/* Stats Grid */}
@@ -81,7 +83,7 @@ export function AdminDashboard() {
                 <stat.icon className={`w-8 h-8 ${stat.color}`} />
               </div>
               <div className={`text-sm ${stat.change.startsWith('+') ? 'text-primary' : 'text-secondary'}`}>
-                {stat.change} from last month
+                {stat.change} {t('adminDashboard', 'fromLastMonth')}
               </div>
             </Card>
           ))}
@@ -89,7 +91,7 @@ export function AdminDashboard() {
 
         {/* Visit Statistics */}
         <Card className="bg-card border-border p-6">
-          <h3 className="text-white mb-6">Visit Statistics</h3>
+          <h3 className="text-white mb-6">{t('adminDashboard', 'visitStats')}</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={visitData}>
@@ -120,7 +122,7 @@ export function AdminDashboard() {
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Popular Hours */}
           <Card className="bg-card border-border p-6">
-            <h3 className="text-white mb-6">Popular Hours</h3>
+            <h3 className="text-white mb-6">{t('adminDashboard', 'popularHours')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={popularHours}>
@@ -143,7 +145,7 @@ export function AdminDashboard() {
 
           {/* Membership Distribution */}
           <Card className="bg-card border-border p-6">
-            <h3 className="text-white mb-6">Membership Distribution</h3>
+            <h3 className="text-white mb-6">{t('adminDashboard', 'membershipDistribution')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -188,7 +190,7 @@ export function AdminDashboard() {
           <Card className="bg-gradient-to-br from-primary/20 to-transparent border-primary/50 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-muted-foreground text-sm mb-2">ACTIVE MEMBERSHIPS</p>
+                <p className="text-muted-foreground text-sm mb-2">{t('adminDashboard', 'activeMemberships')}</p>
                 <p className="text-4xl text-white">412</p>
               </div>
               <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">

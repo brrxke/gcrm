@@ -55,20 +55,20 @@ sudo systemctl start mongodb
 ### 5️⃣ Запустите сервисы
 
 ```bash
-python services/auth/app.py
-python services/users/app.py
-python services/memberships/app.py
-python services/bookings/app.py
-python services/feedback/app.py
-python services/analytics/app.py
-python services/telegram/app.py
+python apps/services/auth/app.py
+python apps/services/users/app.py
+python apps/services/memberships/app.py
+python apps/services/bookings/app.py
+python apps/services/feedback/app.py
+python apps/services/analytics/app.py
+python apps/services/telegram/app.py
 ```
 
 Каждый сервис запускается на своём порту (5001-5007). Если используете gateway, он слушает `http://localhost:5008` ✅
 
 ### 6️⃣ Протестируйте API
 
-Откройте браузер: http://localhost:5008
+Откройте браузер: http://localhost:5008 (через gateway) или http://localhost:8080 (напрямую)
 
 Или используйте cURL:
 ```bash

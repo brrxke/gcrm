@@ -3,8 +3,10 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Star, Gift } from 'lucide-react';
+import { useI18n } from '../../context/I18nContext';
 
 export function FeedbackSurvey() {
+  const { t } = useI18n();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [feedback, setFeedback] = useState('');
@@ -12,7 +14,7 @@ export function FeedbackSurvey() {
 
   const handleSubmit = () => {
     if (rating === 0) {
-      alert('Please select a rating');
+      alert(t('feedback', 'selectRatingAlert'));
       return;
     }
     setSubmitted(true);
@@ -25,19 +27,19 @@ export function FeedbackSurvey() {
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <Gift className="w-8 h-8 text-black" />
           </div>
-          <h2 className="text-2xl text-white mb-4">Thank You!</h2>
+          <h2 className="text-2xl text-white mb-4">{t('feedback', 'thankYou')}</h2>
           <p className="text-muted-foreground mb-6">
-            Your feedback helps us improve. As a token of appreciation, enjoy 10% off your next membership renewal.
+            {t('feedback', 'thankYouDesc')}
           </p>
           <div className="bg-black/50 rounded-lg p-4 mb-6">
-            <p className="text-sm text-muted-foreground mb-2">Promo Code</p>
+            <p className="text-sm text-muted-foreground mb-2">{t('feedback', 'promoCode')}</p>
             <p className="text-2xl text-primary tracking-wider">THANKS10</p>
           </div>
           <Button
             onClick={() => setSubmitted(false)}
             className="bg-primary hover:bg-primary/90 text-black"
           >
-            Submit Another Review
+            {t('feedback', 'submitAnother')}
           </Button>
         </Card>
       </div>
@@ -48,13 +50,13 @@ export function FeedbackSurvey() {
     <div className="min-h-screen bg-black p-4 lg:p-8 pb-24 lg:pb-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="text-center mb-8">
-          <h1 className="text-3xl text-white mb-2 uppercase tracking-wider">Share Your Experience</h1>
-          <p className="text-muted-foreground">Your feedback matters</p>
+          <h1 className="text-3xl text-white mb-2 uppercase tracking-wider">{t('feedback', 'title')}</h1>
+          <p className="text-muted-foreground">{t('feedback', 'subtitle')}</p>
         </div>
 
         {/* Rating */}
         <Card className="bg-card border-border p-8">
-          <h3 className="text-white mb-6 text-center">How was your experience?</h3>
+          <h3 className="text-white mb-6 text-center">{t('feedback', 'experienceQuestion')}</h3>
           <div className="flex justify-center gap-2 mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -75,39 +77,39 @@ export function FeedbackSurvey() {
             ))}
           </div>
           <p className="text-center text-muted-foreground text-sm">
-            {rating === 0 && 'Select a rating'}
-            {rating === 1 && 'Poor'}
-            {rating === 2 && 'Fair'}
-            {rating === 3 && 'Good'}
-            {rating === 4 && 'Very Good'}
-            {rating === 5 && 'Excellent'}
+            {rating === 0 && t('feedback', 'ratingNone')}
+            {rating === 1 && t('feedback', 'rating1')}
+            {rating === 2 && t('feedback', 'rating2')}
+            {rating === 3 && t('feedback', 'rating3')}
+            {rating === 4 && t('feedback', 'rating4')}
+            {rating === 5 && t('feedback', 'rating5')}
           </p>
         </Card>
 
         {/* Feedback Text */}
         <Card className="bg-card border-border p-6">
-          <h3 className="text-white mb-4">Tell us more</h3>
+          <h3 className="text-white mb-4">{t('feedback', 'tellMore')}</h3>
           <Textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
-            placeholder="What did you like? What can we improve?"
+            placeholder={t('feedback', 'placeholder')}
             className="bg-input border-border text-white min-h-[150px] resize-none"
           />
         </Card>
 
         {/* Categories */}
         <Card className="bg-card border-border p-6">
-          <h3 className="text-white mb-4">Rate specific aspects</h3>
+          <h3 className="text-white mb-4">{t('feedback', 'rateAspects')}</h3>
           <div className="space-y-4">
             {[
-              'Equipment Quality',
-              'Cleanliness',
-              'Staff Friendliness',
-              'Class Variety',
-              'Value for Money'
-            ].map((category) => (
-              <div key={category} className="flex items-center justify-between">
-                <span className="text-white">{category}</span>
+              'aspectEquipment',
+              'aspectCleanliness',
+              'aspectStaff',
+              'aspectClasses',
+              'aspectValue'
+            ].map((categoryKey) => (
+              <div key={categoryKey} className="flex items-center justify-between">
+                <span className="text-white">{t('feedback', categoryKey)}</span>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
@@ -126,9 +128,9 @@ export function FeedbackSurvey() {
           <div className="flex items-start gap-4">
             <Gift className="w-8 h-8 text-primary flex-shrink-0" />
             <div>
-              <h3 className="text-white mb-2">Special Offer</h3>
+              <h3 className="text-white mb-2">{t('feedback', 'specialOffer')}</h3>
               <p className="text-muted-foreground text-sm">
-                Complete this survey and get 10% off your next membership renewal
+                {t('feedback', 'specialOfferDesc')}
               </p>
             </div>
           </div>
@@ -139,7 +141,7 @@ export function FeedbackSurvey() {
           onClick={handleSubmit}
           className="w-full bg-primary hover:bg-primary/90 text-black h-12"
         >
-          Submit Feedback
+          {t('feedback', 'submit')}
         </Button>
       </div>
     </div>

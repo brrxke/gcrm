@@ -7,7 +7,7 @@ import { useI18n } from '../context/I18nContext';
 import { LanguageSelector } from './LanguageSelector';
 
 interface RegisterPageProps {
-  onRegister: (email: string, password: string, name: string, phone?: string) => Promise<void>;
+  onRegister: (email: string, password: string, name: string, phone?: string, age?: number) => Promise<void>;
 }
 
 export function RegisterPage({ onRegister }: RegisterPageProps) {
@@ -15,6 +15,7 @@ export function RegisterPage({ onRegister }: RegisterPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
+  const [age, setAge] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { t } = useI18n();
@@ -25,7 +26,8 @@ export function RegisterPage({ onRegister }: RegisterPageProps) {
     setIsLoading(true);
 
     try {
-      await onRegister(name, email, password, phone);
+      const parsedAge = age ? Number(age) : undefined;
+      await onRegister(name, email, password, phone, Number.isNaN(parsedAge) ? undefined : parsedAge);
     } catch (err: any) {
       setError(err.message || t('auth', 'registrationFailed'));
     } finally {
@@ -100,6 +102,23 @@ export function RegisterPage({ onRegister }: RegisterPageProps) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="pl-10 bg-input border-border text-white placeholder:text-muted-foreground"
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="age" className="text-white">Age (optional)</Label>
+            <div className="relative">
+              <Input
+                id="age"
+                type="number"
+                min={12}
+                max={120}
+                placeholder="Age"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                className="bg-input border-border text-white placeholder:text-muted-foreground"
                 disabled={isLoading}
               />
             </div>

@@ -1,35 +1,6 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv
-seed.py
-
-# Environment variables
-.env
-.env.local
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
@@ -38,25 +9,48 @@ seed.py
 *.swo
 *~
 
-# Uploads
-uploads/
-*.log
+# Environment
+.env
+.env.*
 
-# OS
-.DS_Store
-Thumbs.db
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Python build
+build/
+dist/
+*.egg-info/
+.eggs/
 
 # Test
 .pytest_cache/
 .coverage
 htmlcov/
 
-# Jupyter
-.ipynb_checkpoints/
+# Logs
+*.log
 
+# Node
 node_modules/
+
+# Frontend build
+build/
+dist/
+
+# Uploads
+uploads/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore

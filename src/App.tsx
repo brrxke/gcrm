@@ -35,9 +35,9 @@ function AppContent() {
     }
   };
 
-  const handleRegister = async (name: string, email: string, password: string, phone?: string) => {
+  const handleRegister = async (name: string, email: string, password: string, phone?: string, age?: number) => {
     try {
-      await authApi.register({ name, email, password, phone });
+      await authApi.register({ name, email, password, phone, age });
       setIsAuthenticated(true);
       setIsAdmin(authApi.isAdmin());
     } catch (error) {

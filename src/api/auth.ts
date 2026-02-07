@@ -10,6 +10,7 @@ interface RegisterRequest {
   email: string;
   password: string;
   phone?: string;
+  age?: number;
 }
 
 interface AuthResponse {
@@ -41,7 +42,11 @@ export const authApi = {
     // Save token to localStorage
     if (response.access_token) {
       localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('user', JSON.stringify({
+        name: data.name,
+        email: data.email,
+        age: data.age,
+      }));
     }
     
     return response;

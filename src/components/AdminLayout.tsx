@@ -6,6 +6,7 @@ import { MembershipManagement } from './admin/MembershipManagement';
 import { Analytics } from './admin/Analytics';
 import { LanguageSelector } from './LanguageSelector';
 import { useState } from 'react';
+import { useI18n } from '../context/I18nContext';
 
 interface AdminLayoutProps {
   onLogout: () => void;
@@ -15,12 +16,13 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { t } = useI18n();
 
   const navItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-    { icon: Users, label: 'Clients', path: '/admin/clients' },
-    { icon: CreditCard, label: 'Memberships', path: '/admin/memberships' },
-    { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
+    { icon: LayoutDashboard, label: t('admin', 'dashboard'), path: '/admin' },
+    { icon: Users, label: t('admin', 'clients'), path: '/admin/clients' },
+    { icon: CreditCard, label: t('admin', 'memberships'), path: '/admin/memberships' },
+    { icon: BarChart3, label: t('admin', 'analytics'), path: '/admin/analytics' },
   ];
 
   const isActive = (path: string) => {
@@ -42,7 +44,7 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
             >
               <Menu className="w-6 h-5" />
             </button>
-            <h1 className="uppercase tracking-wider text-primary">Admin Panel</h1>
+            <h1 className="uppercase tracking-wider text-primary">{t('admin', 'panel')}</h1>
           </div>
           <div className="flex items-center gap-2">
             <LanguageSelector />
@@ -69,6 +71,10 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
                 <p className="text-xs text-muted-foreground">Admin Panel</p>
               </div>
             </div>
+          </div>
+          <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">{t('common', 'language')}</span>
+            <LanguageSelector align="left" />
           </div>
           
           <nav className="flex-1 p-4">
@@ -98,7 +104,7 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
             className="m-4 flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-secondary hover:bg-muted transition-colors border-t border-border"
           >
             <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            <span>{t('layout', 'logout')}</span>
           </button>
         </div>
       </div>

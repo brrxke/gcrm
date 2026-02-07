@@ -83,4 +83,4 @@ setup_env.sh
 test_db_connection.py
 
 # Lock files
-package-lock.json
+# (keep package-lock.json for npm ci)

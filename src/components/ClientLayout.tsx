@@ -1,12 +1,12 @@
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { Home, CreditCard, User, MessageSquare, Calendar, Star, LogOut } from 'lucide-react';
+import { Home, CreditCard, User, Calendar, Star, LogOut } from 'lucide-react';
 import { ClientDashboard } from './client/ClientDashboard';
 import { MembershipPlans } from './client/MembershipPlans';
 import { UserProfile } from './client/UserProfile';
-import { TrainerChat } from './client/TrainerChat';
 import { TrialBooking } from './client/TrialBooking';
 import { FeedbackSurvey } from './client/FeedbackSurvey';
 import { LanguageSelector } from './LanguageSelector';
+import { useI18n } from '../context/I18nContext';
 
 interface ClientLayoutProps {
   onLogout: () => void;
@@ -15,14 +15,14 @@ interface ClientLayoutProps {
 export function ClientLayout({ onLogout }: ClientLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useI18n();
 
   const navItems = [
-    { icon: Home, label: 'Home', path: '/client' },
-    { icon: CreditCard, label: 'Plans', path: '/client/plans' },
-    { icon: Calendar, label: 'Book', path: '/client/book' },
-    { icon: MessageSquare, label: 'Chat', path: '/client/chat' },
-    { icon: Star, label: 'Feedback', path: '/client/feedback' },
-    { icon: User, label: 'Profile', path: '/client/profile' },
+    { icon: Home, label: t('client', 'home'), path: '/client' },
+    { icon: CreditCard, label: t('client', 'plans'), path: '/client/plans' },
+    { icon: Calendar, label: t('client', 'book'), path: '/client/book' },
+    { icon: Star, label: t('client', 'feedback'), path: '/client/feedback' },
+    { icon: User, label: t('client', 'profile'), path: '/client/profile' },
   ];
 
   const isActive = (path: string) => {
@@ -55,6 +55,9 @@ export function ClientLayout({ onLogout }: ClientLayoutProps) {
               <span className="text-black text-xl">IT</span>
             </div>
           </div>
+          <div className="p-2 flex items-center justify-center border-b border-border">
+            <LanguageSelector compact align="left" />
+          </div>
           <nav className="flex-1 py-4">
             {navItems.map((item) => (
               <button
@@ -76,7 +79,7 @@ export function ClientLayout({ onLogout }: ClientLayoutProps) {
             className="p-4 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-secondary transition-colors border-t border-border"
           >
             <LogOut className="w-5 h-5" />
-            <span className="text-xs">Logout</span>
+            <span className="text-xs">{t('layout', 'logout')}</span>
           </button>
         </div>
       </div>
@@ -87,7 +90,6 @@ export function ClientLayout({ onLogout }: ClientLayoutProps) {
           <Route path="/" element={<ClientDashboard />} />
           <Route path="/plans" element={<MembershipPlans />} />
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="/chat" element={<TrainerChat />} />
           <Route path="/book" element={<TrialBooking />} />
           <Route path="/feedback" element={<FeedbackSurvey />} />
         </Routes>
