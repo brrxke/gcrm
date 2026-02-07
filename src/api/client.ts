@@ -22,6 +22,31 @@ class ApiClient {
     return headers;
   }
 
+  private async parseResponse<T>(response: Response): Promise<T> {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return response.json();
+    }
+    const text = await response.text();
+    // If backend returned non-JSON, surface as error-friendly object
+    // so callers don't crash on JSON.parse.
+    // @ts-ignore - allow returning string payloads when needed
+    return (text as T);
+  }
+
+  private async parseError(response: Response): Promise<Error> {
+    try {
+      const data = await this.parseResponse<any>(response);
+      const message =
+        typeof data === 'string'
+          ? data
+          : data?.error || data?.message || 'Request failed';
+      return new Error(message);
+    } catch {
+      return new Error('Request failed');
+    }
+  }
+
   async get<T>(endpoint: string, useCache: boolean = true): Promise<T> {
     const cacheKey = `GET:${endpoint}`;
     
@@ -40,11 +65,10 @@ class ApiClient {
 
     if (!response.ok) {
       this.requestCache.delete(cacheKey);
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Request failed');
+      throw await this.parseError(response);
     }
 
-    const resultData = await response.json();
+    const resultData = await this.parseResponse<T>(response);
     if (useCache) {
       this.requestCache.set(cacheKey, { data: resultData, timestamp: Date.now() });
     }
@@ -63,11 +87,10 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Request failed');
+      throw await this.parseError(response);
     }
 
-    const resultData = await response.json();
+    const resultData = await this.parseResponse<T>(response);
     this.clearRelatedCache(endpoint);
     return resultData;
   }
@@ -84,11 +107,10 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Request failed');
+      throw await this.parseError(response);
     }
 
-    const resultData = await response.json();
+    const resultData = await this.parseResponse<T>(response);
     this.clearRelatedCache(endpoint);
     return resultData;
   }
@@ -105,12 +127,11 @@ class ApiClient {
 
     if (!response.ok) {
       this.requestCache.delete(cacheKey);
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Request failed');
+      throw await this.parseError(response);
     }
 
     this.clearRelatedCache(endpoint);
-    return response.json();
+    return this.parseResponse<T>(response);
   }
 
   clearCache(): void {

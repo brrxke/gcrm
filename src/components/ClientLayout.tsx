@@ -6,7 +6,7 @@ import { UserProfile } from './client/UserProfile';
 import { TrainerChat } from './client/TrainerChat';
 import { TrialBooking } from './client/TrialBooking';
 import { FeedbackSurvey } from './client/FeedbackSurvey';
-import { LanguageSelector } from '../LanguageSelector';
+import { LanguageSelector } from './LanguageSelector';
 
 interface ClientLayoutProps {
   onLogout: () => void;

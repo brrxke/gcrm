@@ -4,7 +4,7 @@ import { AdminDashboard } from './admin/AdminDashboard';
 import { ClientManagement } from './admin/ClientManagement';
 import { MembershipManagement } from './admin/MembershipManagement';
 import { Analytics } from './admin/Analytics';
-import { LanguageSelector } from '../LanguageSelector';
+import { LanguageSelector } from './LanguageSelector';
 import { useState } from 'react';
 
 interface AdminLayoutProps {
@@ -50,11 +50,6 @@ export function AdminLayout({ onLogout }: AdminLayoutProps) {
               <LogOut className="w-5 h-5" />
             </button>
           </div>
-        </div>
-      </div>
-          <button onClick={onLogout} className="text-muted-foreground hover:text-secondary">
-            <LogOut className="w-5 h-5" />
-          </button>
         </div>
       </div>
 

@@ -50,7 +50,14 @@ class User:
 
     @staticmethod
     def verify_password(stored_password, provided_password):
-        return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)
+        if stored_password is None:
+            return False
+        if isinstance(stored_password, str):
+            stored_password = stored_password.encode('utf-8')
+        try:
+            return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)
+        except (ValueError, TypeError):
+            return False
 
     @staticmethod
     def get_all_clients(filters=None):

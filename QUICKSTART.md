@@ -52,29 +52,27 @@ sudo systemctl start mongodb
 
 **Для MongoDB Atlas**: Просто получите connection string из вашего кластера.
 
-### 5️⃣ Инициализируйте базу данных
+### 5️⃣ Запустите сервисы
 
 ```bash
-python seed.py
+python services/auth/app.py
+python services/users/app.py
+python services/memberships/app.py
+python services/bookings/app.py
+python services/feedback/app.py
+python services/analytics/app.py
+python services/telegram/app.py
 ```
 
-Это создаст тестовых пользователей и данные.
+Каждый сервис запускается на своём порту (5001-5007). Если используете gateway, он слушает `http://localhost:5008` ✅
 
-### 6️⃣ Запустите сервер
+### 6️⃣ Протестируйте API
 
-```bash
-python app.py
-```
-
-Сервер запустится на `http://localhost:5001` ✅
-
-### 7️⃣ Протестируйте API
-
-Откройте браузер: http://localhost:5001
+Откройте браузер: http://localhost:5008
 
 Или используйте cURL:
 ```bash
-curl http://localhost:5001/api/health
+curl http://localhost:5008/api/health
 ```
 
 ## 🎯 Тестовые учетные данные
@@ -100,13 +98,13 @@ Client:
 
 ```bash
 # Login
-curl -X POST http://localhost:5001/api/auth/login \
+curl -X POST http://localhost:5008/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@gym.com","password":"admin123"}'
 
 # Это вернет токен, используйте его так:
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://localhost:5001/api/users/stats
+  http://localhost:5008/api/users/stats
 ```
 
 ### Вариант 3: Python requests
@@ -115,13 +113,13 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 import requests
 
 # Login
-response = requests.post('http://localhost:5001/api/auth/login', 
+response = requests.post('http://localhost:5008/api/auth/login', 
     json={'email': 'admin@gym.com', 'password': 'admin123'})
 token = response.json()['access_token']
 
 # Use token
 headers = {'Authorization': f'Bearer {token}'}
-stats = requests.get('http://localhost:5001/api/analytics/dashboard', 
+stats = requests.get('http://localhost:5008/api/analytics/dashboard', 
     headers=headers)
 print(stats.json())
 ```
@@ -132,7 +130,7 @@ print(stats.json())
 
 ```javascript
 // config.js
-export const API_URL = 'http://localhost:5001/api';
+export const API_URL = 'http://localhost:5008/api';
 
 // Пример использования
 const login = async (email, password) => {
@@ -164,8 +162,8 @@ const getProfile = async () => {
 **Проблема**: `Could not connect to database`
 **Решение**: Проверьте, что MongoDB запущен: `mongod` или используйте Atlas
 
-**Проблема**: `Port 5001 already in use`
-**Решение**: Измените PORT в `.env` или убейте процесс: `lsof -ti:5001 | xargs kill`
+**Проблема**: `Port 5008 already in use`
+**Решение**: Освободите порт 5008 или измените порт gateway в `docker-compose.yaml`
 
 **Проблема**: JWT токен не работает
 **Решение**: Проверьте, что вы добавили `Authorization: Bearer TOKEN` в header

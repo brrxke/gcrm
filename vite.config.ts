@@ -66,11 +66,6 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: process.env.BACKEND_URL || 'http://backend:5000',
-        configure: (proxy, options) => {
-          proxyReq: proxyReq => {
-            proxyReq.setHeader('Content-Type', 'application/json');
-            return proxyReq;
-        },
         changeOrigin: true,
         secure: false,
         ws: true

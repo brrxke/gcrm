@@ -32,7 +32,7 @@ Gym CRM includes the following capabilities:
 
 ## 📦 Tech Stack
 
-✅ **Backend:** Python + Flask  
+✅ **Backend:** Python + Flask (microservices)  
 ✅ **Database:** MongoDB  
 ✅ **Authentication:** JWT  
 ✅ **Frontend:** React + Vite  
@@ -73,10 +73,8 @@ JWT_ACCESS_TOKEN_EXPIRES=1
 
 # Flask Environment
 FLASK_ENV=development
-FLASK_APP=app.py
 
 # Server Configuration
-PORT=5001
 HOST=0.0.0.0
 
 # CORS Configuration
@@ -95,14 +93,14 @@ docker-compose up -d
 
 This will start:
 - **MongoDB** on port 27017
-- **Backend API** on port 5001
+- **API Gateway** on port 5008 (routes to microservices)
 - **Frontend** on port 8080
 - **Mongo Express** on port 8081 (optional GUI for MongoDB)
 
 4️⃣ Access the Application
 
 - Frontend: http://localhost:8080
-- Backend API: http://localhost:5001
+- API Gateway: http://localhost:5008
 - Mongo Express: http://localhost:8081
 
 ### Option 2: Local Development
@@ -133,13 +131,19 @@ mongod
 
 Or use MongoDB Atlas for cloud database.
 
-5️⃣ Start Backend
+5️⃣ Start Services (pick one or all)
 
 ```bash
-python app.py
+python services/auth/app.py
+python services/users/app.py
+python services/memberships/app.py
+python services/bookings/app.py
+python services/feedback/app.py
+python services/analytics/app.py
+python services/telegram/app.py
 ```
 
-Backend will be available at http://localhost:5001
+Each service runs on its own port (5001-5007 by default). The gateway aggregates them on http://localhost:5000.
 
 6️⃣ Start Frontend
 
@@ -160,15 +164,15 @@ Full API specification can be found in:
 ### Example Requests (cURL)
 
 # Login
-curl -X POST http://localhost:5001/api/auth/login \
+curl -X POST http://localhost:5008/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"john@example.com","password":"password123"}'
 
 # Get memberships
-curl http://localhost:5001/api/memberships
+curl http://localhost:5008/api/memberships
 
 # Create booking
-curl -X POST http://localhost:5001/api/bookings \
+curl -X POST http://localhost:5008/api/bookings \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"date":"2026-02-15","time":"10:00"}'
@@ -180,7 +184,14 @@ curl -X POST http://localhost:5001/api/bookings \
 ### Services Included
 
 - **mongodb**: MongoDB 7.0 database
-- **backend**: Flask Python backend with auto MongoDB connection
+- **gateway**: Nginx API gateway routing to microservices
+- **auth-service**: Auth/JWT endpoints
+- **users-service**: User management
+- **memberships-service**: Membership plans
+- **bookings-service**: Trial bookings
+- **feedback-service**: Feedback + messaging
+- **analytics-service**: Visits + dashboard stats
+- **telegram-service**: Telegram bot management
 - **frontend**: React frontend served via nginx
 - **mongo-express**: Web-based MongoDB admin interface
 
@@ -245,11 +256,7 @@ The following collections are automatically created on first run:
 
 **Automatic:** Collections and indexes are created automatically on the first run.
 
-**Manual (optional):** Run `python init_db.py` to manually initialize the database.
-
-**Test connection:** Run `python test_db_connection.py` to verify your MongoDB setup
-
-**Seed data:** Run `python seed.py` to populate the database with sample data (after initialization).
+Manual initialization utilities were removed as part of the microservices cleanup.
 
 The application automatically connects to MongoDB on startup using the `MONGODB_URI` from `.env` file. Connection features:
 
@@ -274,11 +281,7 @@ The following collections are automatically created on first run:
 
 **Automatic:** Collections and indexes are created automatically on the first run.
 
-**Manual (optional):** Run `python init_db.py` to manually initialize the database.
-
-**Test connection:** Run `python test_db_connection.py` to verify your MongoDB setup
-
-**Seed data:** Run `python seed.py` to populate the database with sample data (after initialization).
+Manual initialization utilities were removed as part of the microservices cleanup.
 
 ---
 
