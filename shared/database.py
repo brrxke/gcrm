@@ -22,7 +22,8 @@ class Database:
         )
         try:
             self.client.admin.command('ping')
-            self.db = self.client.get_database()
+            db_name = os.getenv('MONGODB_DB', 'gcrm')
+            self.db = self.client.get_database(db_name)
             return True
         except Exception:
             return False

@@ -5,7 +5,6 @@ from shared.schemas import user_update_schema
 from marshmallow import ValidationError
 from shared.middleware.auth import jwt_required_custom, admin_required
 import os
-from shared.utils.file_handler import save_file
 
 users_bp = Blueprint('users', __name__)
 
@@ -148,6 +147,7 @@ def update_user_role(user_id):
         if not target_user:
             return jsonify({'error': 'User not found'}), 404
 
+        current_user_id = get_jwt_identity()
         if role != 'admin' and target_user.get('role') == 'admin' and User.count_admins() <= 1:
             return jsonify({'error': 'Cannot remove last admin'}), 400
 

@@ -5,6 +5,7 @@ from shared.schemas import user_registration_schema, user_login_schema
 from marshmallow import ValidationError
 from shared.middleware.auth import jwt_required_custom
 import os
+import bcrypt
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -131,7 +132,6 @@ def change_password():
         if not User.verify_password(user['password'], current_password):
             return jsonify({'error': 'Current password is incorrect'}), 401
         
-        import bcrypt
         hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
         User.update(user_id, {'password': hashed_password})
         

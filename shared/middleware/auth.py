@@ -39,5 +39,5 @@ def get_current_user():
         if user:
             user.pop('password', None)  # Remove password from user object
         return user
-    except:
+    except Exception:
         return None
