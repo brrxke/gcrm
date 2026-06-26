@@ -1,6 +1,13 @@
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from datetime import datetime
 from shared.database import get_db
+
+def safe_object_id(id_str):
+    try:
+        return ObjectId(id_str)
+    except (InvalidId, TypeError):
+        return None
 
 class Booking:
     """Trial session booking model"""
@@ -31,11 +38,13 @@ class Booking:
     
     @staticmethod
     def find_by_id(booking_id):
-        """Find booking by ID"""
+        obj_id = safe_object_id(booking_id)
+        if not obj_id:
+            return None
         db = get_db()
         collection = db.get_collection(Booking.collection_name)
         
-        booking = collection.find_one({'_id': ObjectId(booking_id)})
+        booking = collection.find_one({'_id': obj_id})
         if booking:
             booking['_id'] = str(booking['_id'])
         return booking
@@ -71,23 +80,27 @@ class Booking:
     
     @staticmethod
     def update_status(booking_id, status):
-        """Update booking status"""
+        obj_id = safe_object_id(booking_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(Booking.collection_name)
         
         result = collection.update_one(
-            {'_id': ObjectId(booking_id)},
+            {'_id': obj_id},
             {'$set': {'status': status, 'updated_at': datetime.utcnow()}}
         )
         return result.modified_count > 0
     
     @staticmethod
     def delete(booking_id):
-        """Delete booking"""
+        obj_id = safe_object_id(booking_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(Booking.collection_name)
         
-        result = collection.delete_one({'_id': ObjectId(booking_id)})
+        result = collection.delete_one({'_id': obj_id})
         return result.deleted_count > 0
     
     @staticmethod

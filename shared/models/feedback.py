@@ -1,6 +1,13 @@
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from datetime import datetime
 from shared.database import get_db
+
+def safe_object_id(id_str):
+    try:
+        return ObjectId(id_str)
+    except (InvalidId, TypeError):
+        return None
 
 class Feedback:
     """Client feedback and survey model"""

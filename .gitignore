@@ -52,5 +52,12 @@ uploads/
 *.sqlite
 *.sqlite3
 
+# Build artifacts
+*.egg-info/
+.eggs/
+
+# Environment file example
+.env.example
+
 # Docker
 .dockerignore

@@ -31,7 +31,7 @@ def create_feedback():
     except ValidationError as err:
         return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
     except Exception as e:
-        return jsonify({'error': 'Failed to create feedback', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to create feedback'}), 500
 
 @feedback_bp.route('/my-feedback', methods=['GET'])
 @jwt_required_custom
@@ -47,7 +47,7 @@ def get_my_feedback():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get feedback', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get feedback'}), 500
 
 @feedback_bp.route('/', methods=['GET'])
 @admin_required
@@ -73,7 +73,7 @@ def get_all_feedback():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get feedback', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get feedback'}), 500
 
 @feedback_bp.route('/average-rating', methods=['GET'])
 def get_average_rating():
@@ -82,7 +82,7 @@ def get_average_rating():
         stats = Feedback.get_average_rating()
         return jsonify(stats), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get rating', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get rating'}), 500
 
 
 # Message routes
@@ -110,7 +110,7 @@ def send_message():
     except ValidationError as err:
         return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
     except Exception as e:
-        return jsonify({'error': 'Failed to send message', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to send message'}), 500
 
 @messages_bp.route('/conversation/<other_user_id>', methods=['GET'])
 @jwt_required_custom
@@ -126,7 +126,7 @@ def get_conversation(other_user_id):
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get conversation', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get conversation'}), 500
 
 @messages_bp.route('/mark-read', methods=['POST'])
 @jwt_required_custom
@@ -146,7 +146,7 @@ def mark_messages_read():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to mark messages', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to mark messages'}), 500
 
 @messages_bp.route('/unread-count', methods=['GET'])
 @jwt_required_custom
@@ -159,4 +159,4 @@ def get_unread_count():
         return jsonify({'unread_count': count}), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get count', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get count'}), 500

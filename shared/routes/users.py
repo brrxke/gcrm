@@ -5,7 +5,7 @@ from shared.schemas import user_update_schema
 from marshmallow import ValidationError
 from shared.middleware.auth import jwt_required_custom, admin_required
 import os
-from shared.utils.file_handler import save_file
+from shared.utils.file_handler import save_file, validate_file_size
 
 users_bp = Blueprint('users', __name__)
 
@@ -22,11 +22,22 @@ def get_all_users():
         if search:
             filters['search'] = search
         
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        
         clients = User.get_all_clients(filters)
         
+        total = len(clients)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated = clients[start:end] if start < total else []
+        
         return jsonify({
-            'clients': clients,
-            'total': len(clients)
+            'clients': paginated,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': (total + per_page - 1) // per_page
         }), 200
         
     except Exception:
@@ -109,6 +120,9 @@ def upload_profile_photo(user_id):
             return jsonify({'error': 'No file provided'}), 400
         
         file = request.files['file']
+        
+        if not validate_file_size(file):
+            return jsonify({'error': 'File too large. Max 5MB allowed'}), 400
         
         upload_folder = os.path.join('uploads', 'profiles')
         filename = save_file(file, upload_folder, resize_image=True)

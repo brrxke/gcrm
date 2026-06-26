@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Toaster } from 'sonner';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
 import { ClientLayout } from './components/ClientLayout';
 import { AdminLayout } from './components/AdminLayout';
 import { I18nProvider } from './context/I18nContext';
 import { authApi } from './api/auth';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -61,8 +63,9 @@ function AppContent() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Routes>
         <Route
           path="/login"
           element={
@@ -104,8 +107,10 @@ function AppContent() {
           }
         />
         <Route path="/" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+      <Toaster position="top-right" richColors />
+    </ErrorBoundary>
   );
 }
 

@@ -1,6 +1,13 @@
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from datetime import datetime
 from shared.database import get_db
+
+def safe_object_id(id_str):
+    try:
+        return ObjectId(id_str)
+    except (InvalidId, TypeError):
+        return None
 
 class Membership:
     collection_name = 'memberships'
@@ -33,15 +40,21 @@ class Membership:
 
     @staticmethod
     def find_by_id(membership_id):
+        obj_id = safe_object_id(membership_id)
+        if not obj_id:
+            return None
         db = get_db()
         collection = db.get_collection(Membership.collection_name)
-        membership = collection.find_one({'_id': ObjectId(membership_id)})
+        membership = collection.find_one({'_id': obj_id})
         if membership:
             membership['_id'] = str(membership['_id'])
         return membership
 
     @staticmethod
     def update(membership_id, data):
+        obj_id = safe_object_id(membership_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(Membership.collection_name)
         update_data = {'updated_at': datetime.utcnow()}
@@ -50,17 +63,20 @@ class Membership:
             if field in data:
                 update_data[field] = data[field]
         result = collection.update_one(
-            {'_id': ObjectId(membership_id)},
+            {'_id': obj_id},
             {'$set': update_data}
         )
         return result.modified_count > 0
 
     @staticmethod
     def delete(membership_id):
+        obj_id = safe_object_id(membership_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(Membership.collection_name)
         result = collection.update_one(
-            {'_id': ObjectId(membership_id)},
+            {'_id': obj_id},
             {'$set': {'is_active': False, 'updated_at': datetime.utcnow()}}
         )
         return result.modified_count > 0

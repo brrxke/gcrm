@@ -1,7 +1,14 @@
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from datetime import datetime
 import bcrypt
 from shared.database import get_db
+
+def safe_object_id(id_str):
+    try:
+        return ObjectId(id_str)
+    except (InvalidId, TypeError):
+        return None
 
 class User:
     collection_name = 'users'
@@ -41,10 +48,13 @@ class User:
 
     @staticmethod
     def find_by_id(user_id):
+        obj_id = safe_object_id(user_id)
+        if not obj_id:
+            return None
         db = get_db()
         collection = db.get_collection(User.collection_name)
         projection = {'password': 0}
-        user = collection.find_one({'_id': ObjectId(user_id)}, projection)
+        user = collection.find_one({'_id': obj_id}, projection)
         if user:
             user['_id'] = str(user['_id'])
         return user
@@ -81,25 +91,31 @@ class User:
 
     @staticmethod
     def update(user_id, data):
+        obj_id = safe_object_id(user_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(User.collection_name)
         update_data = {'updated_at': datetime.utcnow()}
         allowed_fields = ['name', 'phone', 'membership', 'membership_status',
-                         'expiry_date', 'profile_image', 'age']
+                         'expiry_date', 'profile_image', 'age', 'password']
         for field in allowed_fields:
             if field in data:
                 update_data[field] = data[field]
         result = collection.update_one(
-            {'_id': ObjectId(user_id)},
+            {'_id': obj_id},
             {'$set': update_data}
         )
         return result.modified_count > 0
 
     @staticmethod
     def delete(user_id):
+        obj_id = safe_object_id(user_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(User.collection_name)
-        result = collection.delete_one({'_id': ObjectId(user_id)})
+        result = collection.delete_one({'_id': obj_id})
         return result.deleted_count > 0
 
     @staticmethod
@@ -131,10 +147,13 @@ class User:
 
     @staticmethod
     def set_role(user_id, role):
+        obj_id = safe_object_id(user_id)
+        if not obj_id:
+            return False
         db = get_db()
         collection = db.get_collection(User.collection_name)
         result = collection.update_one(
-            {'_id': ObjectId(user_id)},
+            {'_id': obj_id},
             {'$set': {'role': role, 'updated_at': datetime.utcnow()}}
         )
         return result.modified_count > 0

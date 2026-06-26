@@ -2,10 +2,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install system dependencies and Python packages, then clean up
 RUN apt-get update && apt-get install -y \
     gcc \
     && pip install --no-cache-dir -r requirements.txt \
@@ -13,11 +11,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy application code
 COPY . .
 
-# Expose port
+RUN adduser --disabled-password --gecos '' appuser && chown -R appuser:appuser /app
+USER appuser
+
 EXPOSE 5000
 
-# Run application
 CMD ["python", "app.py"]

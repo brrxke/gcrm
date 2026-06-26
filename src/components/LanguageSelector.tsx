@@ -4,6 +4,7 @@ import { Globe, Check, X } from 'lucide-react';
 
 export function SupportModal({ onClose }: { onClose: () => void }) {
   const { t } = useI18n();
+  const telegramSupportUrl = import.meta.env.VITE_TELEGRAM_SUPPORT_URL || 'https://t.me/test_support_link';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -41,7 +42,7 @@ export function SupportModal({ onClose }: { onClose: () => void }) {
               {t('support', 'contactUs')}
             </a>
             <a
-              href="https://t.me/test_support_link"
+              href={telegramSupportUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-primary transition-colors block"

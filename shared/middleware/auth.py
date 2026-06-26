@@ -10,8 +10,8 @@ def jwt_required_custom(fn):
         try:
             verify_jwt_in_request()
             return fn(*args, **kwargs)
-        except Exception as e:
-            return jsonify({'error': 'Invalid or missing token', 'message': str(e)}), 401
+        except Exception:
+            return jsonify({'error': 'Invalid or missing token'}), 401
     return wrapper
 
 def admin_required(fn):
@@ -27,8 +27,8 @@ def admin_required(fn):
                 return jsonify({'error': 'Admin access required'}), 403
             
             return fn(*args, **kwargs)
-        except Exception as e:
-            return jsonify({'error': 'Authentication failed', 'message': str(e)}), 401
+        except Exception:
+            return jsonify({'error': 'Authentication failed'}), 401
     return wrapper
 
 def get_current_user():

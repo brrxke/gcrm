@@ -34,7 +34,7 @@ def get_dashboard_stats():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get dashboard stats', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get dashboard stats'}), 500
 
 @analytics_bp.route('/visits/record', methods=['POST'])
 @jwt_required_custom
@@ -50,7 +50,7 @@ def record_visit():
         }), 201
         
     except Exception as e:
-        return jsonify({'error': 'Failed to record visit', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to record visit'}), 500
 
 @analytics_bp.route('/visits/today', methods=['GET'])
 @admin_required
@@ -60,7 +60,7 @@ def get_today_visits():
         count = Visit.get_today_visits()
         return jsonify({'today_visits': count}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get visits', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get visits'}), 500
 
 @analytics_bp.route('/visits/weekly', methods=['GET'])
 @admin_required
@@ -70,7 +70,7 @@ def get_weekly_visits():
         data = Visit.get_weekly_visits()
         return jsonify({'weekly_visits': data}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get visits', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get visits'}), 500
 
 @analytics_bp.route('/visits/popular-hours', methods=['GET'])
 @admin_required
@@ -80,7 +80,7 @@ def get_popular_hours():
         data = Visit.get_popular_hours()
         return jsonify({'popular_hours': data}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get hours', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get hours'}), 500
 
 @analytics_bp.route('/visits/my-history', methods=['GET'])
 @jwt_required_custom
@@ -98,7 +98,7 @@ def get_my_visit_history():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get history', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get history'}), 500
 
 @analytics_bp.route('/revenue', methods=['GET'])
 @admin_required
@@ -153,4 +153,4 @@ def get_revenue_stats():
             }), 200
         
     except Exception as e:
-        return jsonify({'error': 'Failed to get revenue', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get revenue'}), 500

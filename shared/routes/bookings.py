@@ -35,33 +35,40 @@ def create_booking():
         
     except ValidationError as err:
         return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
-    except Exception as e:
-        return jsonify({'error': 'Failed to create booking', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to create booking'}), 500
 
 @bookings_bp.route('/my-bookings', methods=['GET'])
 @jwt_required_custom
 def get_my_bookings():
-    """Get current user's bookings"""
     try:
         user_id = get_jwt_identity()
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        
         bookings = Booking.get_by_user(user_id)
+        total = len(bookings)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated = bookings[start:end] if start < total else []
         
         return jsonify({
-            'bookings': bookings,
-            'total': len(bookings)
+            'bookings': paginated,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': (total + per_page - 1) // per_page
         }), 200
         
-    except Exception as e:
-        return jsonify({'error': 'Failed to get bookings', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to get bookings'}), 500
 
 @bookings_bp.route('/', methods=['GET'])
 @admin_required
 def get_all_bookings():
-    """Get all bookings (admin only)"""
     try:
         filters = {}
         
-        # Get query parameters
         status = request.args.get('status')
         date = request.args.get('date')
         
@@ -70,20 +77,29 @@ def get_all_bookings():
         if date:
             filters['date'] = date
         
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        
         bookings = Booking.get_all(filters)
+        total = len(bookings)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated = bookings[start:end] if start < total else []
         
         return jsonify({
-            'bookings': bookings,
-            'total': len(bookings)
+            'bookings': paginated,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': (total + per_page - 1) // per_page
         }), 200
         
-    except Exception as e:
-        return jsonify({'error': 'Failed to get bookings', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to get bookings'}), 500
 
 @bookings_bp.route('/<booking_id>', methods=['GET'])
 @jwt_required_custom
 def get_booking(booking_id):
-    """Get booking by ID"""
     try:
         booking = Booking.find_by_id(booking_id)
         
@@ -92,8 +108,8 @@ def get_booking(booking_id):
         
         return jsonify({'booking': booking}), 200
         
-    except Exception as e:
-        return jsonify({'error': 'Failed to get booking', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to get booking'}), 500
 
 @bookings_bp.route('/<booking_id>/status', methods=['PATCH'])
 @admin_required
@@ -116,8 +132,8 @@ def update_booking_status(booking_id):
         
         return jsonify({'message': 'Booking status updated successfully'}), 200
         
-    except Exception as e:
-        return jsonify({'error': 'Failed to update status', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to update status'}), 500
 
 @bookings_bp.route('/<booking_id>', methods=['DELETE'])
 @jwt_required_custom
@@ -141,8 +157,8 @@ def delete_booking(booking_id):
         
         return jsonify({'message': 'Booking deleted successfully'}), 200
         
-    except Exception as e:
-        return jsonify({'error': 'Failed to delete booking', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to delete booking'}), 500
 
 @bookings_bp.route('/check-availability', methods=['POST'])
 def check_availability():
@@ -159,5 +175,5 @@ def check_availability():
         
         return jsonify({'available': available}), 200
         
-    except Exception as e:
-        return jsonify({'error': 'Failed to check availability', 'message': str(e)}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to check availability'}), 500

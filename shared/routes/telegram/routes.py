@@ -1,19 +1,31 @@
 """
-API маршруты для управления Telegram ботами технической поддержки
+Telegram bot management API routes
 """
 
 from flask import Blueprint, request, jsonify
+import asyncio
+import threading
 from .config import bot_manager, TelegramBotConfig
 from .bot import bot_controller
 from .management import account_manager
+from shared.middleware.auth import jwt_required_custom, admin_required
 import logging
 
 telegram_bp = Blueprint('telegram', __name__)
 logger = logging.getLogger(__name__)
 
+def _run_async(coro):
+    """Run async coroutine in a new event loop (thread-safe for Flask sync routes)"""
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
+
 @telegram_bp.route('/bots', methods=['GET'])
+@admin_required
 def get_bots():
-    """Получить список всех ботов"""
     bots = []
     for bot_name, bot_config in bot_manager.bots.items():
         account_status = account_manager.get_account_status(bot_name)
@@ -27,23 +39,41 @@ def get_bots():
     return jsonify(bots)
 
 @telegram_bp.route('/bots/<bot_name>/start', methods=['POST'])
+@admin_required
 def start_bot(bot_name):
-    """Запустить бота"""
-    # Здесь будет логика запуска бота
-    return jsonify({'message': f'Бот {bot_name} запущен'})
+    if bot_name not in bot_manager.bots:
+        return jsonify({'error': 'Bot not found'}), 404
+
+    started = _run_async(account_manager.start_account(bot_name))
+    if not started:
+        status = account_manager.get_account_status(bot_name)
+        return jsonify({
+            'error': f'Failed to start bot {bot_name}',
+            'last_error': status['last_error'] if status else None
+        }), 500
+    return jsonify({'message': f'Bot {bot_name} started'})
 
 @telegram_bp.route('/bots/<bot_name>/stop', methods=['POST'])
+@admin_required
 def stop_bot(bot_name):
-    """Остановить бота"""
-    # Здесь будет логика остановки бота
-    return jsonify({'message': f'Бот {bot_name} остановлен'})
+    if bot_name not in bot_manager.bots:
+        return jsonify({'error': 'Bot not found'}), 404
+
+    stopped = _run_async(account_manager.stop_account(bot_name))
+    if not stopped:
+        status = account_manager.get_account_status(bot_name)
+        return jsonify({
+            'error': f'Failed to stop bot {bot_name}',
+            'last_error': status['last_error'] if status else None
+        }), 500
+    return jsonify({'message': f'Bot {bot_name} stopped'})
 
 @telegram_bp.route('/bots/<bot_name>/status', methods=['GET'])
+@admin_required
 def get_bot_status(bot_name):
-    """Получить статус бота"""
     account_status = account_manager.get_account_status(bot_name)
     if not account_status:
-        return jsonify({'error': 'Бот не найден'}), 404
+        return jsonify({'error': 'Bot not found'}), 404
     
     return jsonify({
         'name': bot_name,
@@ -54,33 +84,39 @@ def get_bot_status(bot_name):
     })
 
 @telegram_bp.route('/bots', methods=['POST'])
+@admin_required
 def create_bot():
-    """Создать нового бота"""
-    data = request.json
+    data = request.get_json(silent=True) or {}
     required_fields = ['name', 'token']
     if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Отсутствуют обязательные поля'}), 400
+        return jsonify({'error': 'Missing required fields'}), 400
     
     bot_name = data['name']
     if bot_name in bot_manager.bots:
-        return jsonify({'error': 'Бот с таким именем уже существует'}), 400
+        return jsonify({'error': 'Bot already exists'}), 400
+
+    try:
+        admin_chat_id = int(data['admin_chat_id']) if data.get('admin_chat_id') is not None else None
+        support_chat_id = int(data['support_chat_id']) if data.get('support_chat_id') is not None else None
+    except (TypeError, ValueError):
+        return jsonify({'error': 'admin_chat_id and support_chat_id must be integers'}), 400
     
     config = TelegramBotConfig(
         name=bot_name,
         token=data['token'],
         description=data.get('description', ''),
-        admin_chat_id=data.get('admin_chat_id'),
-        support_chat_id=data.get('support_chat_id')
+        admin_chat_id=admin_chat_id,
+        support_chat_id=support_chat_id
     )
     
     bot_manager.add_bot(config)
-    return jsonify({'message': f'Бот {bot_name} создан'}), 201
+    return jsonify({'message': f'Bot {bot_name} created'}), 201
 
 @telegram_bp.route('/bots/<bot_name>', methods=['DELETE'])
+@admin_required
 def delete_bot(bot_name):
-    """Удалить бота"""
     if bot_name not in bot_manager.bots:
-        return jsonify({'error': 'Бот не найден'}), 404
+        return jsonify({'error': 'Bot not found'}), 404
     
     bot_manager.remove_bot(bot_name)
-    return jsonify({'message': f'Бот {bot_name} удален'})
+    return jsonify({'message': f'Bot {bot_name} deleted'})

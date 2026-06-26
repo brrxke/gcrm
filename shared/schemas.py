@@ -5,7 +5,7 @@ class UserRegistrationSchema(Schema):
     """Schema for user registration"""
     name = fields.Str(required=True, validate=validate.Length(min=2, max=100))
     email = fields.Email(required=True)
-    password = fields.Str(required=True, validate=validate.Length(min=6))
+    password = fields.Str(required=True, validate=validate.Length(min=8, max=128))
     phone = fields.Str(validate=validate.Length(max=20))
     age = fields.Int(validate=validate.Range(min=12, max=120))
     role = fields.Str(validate=validate.OneOf(['client', 'admin']))

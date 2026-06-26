@@ -35,6 +35,8 @@ class SupportTelegramBot:
             # Запуск бота
             await self.application.initialize()
             await self.application.start()
+            if self.application.updater:
+                await self.application.updater.start_polling()
             logger.info(f"Бот {self.config.name} запущен")
             
         except Exception as e:
@@ -44,6 +46,8 @@ class SupportTelegramBot:
     async def stop(self):
         """Остановка бота"""
         if self.application:
+            if self.application.updater:
+                await self.application.updater.stop()
             await self.application.stop()
             await self.application.shutdown()
             logger.info(f"Бот {self.config.name} остановлен")
@@ -83,7 +87,8 @@ class SupportTelegramBot:
     
     async def _unknown_message(self, update: Update, context: CallbackContext):
         """Обработчик неизвестных сообщений"""
-        await update.message.reply_text("Извините, я не понимаю эту команду.")
+        if update.message:
+            await update.message.reply_text("Извините, я не понимаю эту команду.")
     
     async def send_admin_message(self, message: str):
         """Отправка сообщения администратору"""

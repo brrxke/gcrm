@@ -4,7 +4,7 @@ services:
     container_name: gym-crm-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongodb_data:/data/db
     environment:
@@ -32,7 +32,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${AUTH_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/auth/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${AUTH_PORT:-5001} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.auth.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -52,7 +54,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${USERS_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/users/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${USERS_PORT:-5002} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.users.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -72,7 +76,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${MEMBERSHIPS_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/memberships/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${MEMBERSHIPS_PORT:-5003} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.memberships.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -92,7 +98,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${BOOKINGS_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/bookings/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${BOOKINGS_PORT:-5004} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.bookings.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -112,7 +120,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${FEEDBACK_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/feedback/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${FEEDBACK_PORT:-5005} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.feedback.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -132,7 +142,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${ANALYTICS_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/analytics/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${ANALYTICS_PORT:-5006} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.analytics.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -152,7 +164,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS}
       - PORT=${TELEGRAM_PORT}
       - PYTHONPATH=/app
-    command: ["python", "apps/services/telegram/app.py"]
+      - FLASK_ENV=${FLASK_ENV:-development}
+    command: >
+      sh -c "gunicorn --bind 0.0.0.0:${TELEGRAM_PORT:-5007} --workers 2 --timeout 120 --access-logfile - --error-logfile - 'apps.services.telegram.app:create_app()'"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -188,24 +202,6 @@ services:
       - "8080:80"
     depends_on:
       - gateway
-    networks:
-      - gcrm-network
-
-  mongo-express:
-    image: mongo-express:latest
-    container_name: gym-crm-mongo-express
-    restart: unless-stopped
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: ${MONGODB_URI}
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_BASICAUTH: ${ME_CONFIG_BASICAUTH}
-      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
-    depends_on:
-      - mongodb
     networks:
       - gcrm-network
 

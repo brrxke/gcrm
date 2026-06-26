@@ -1,6 +1,13 @@
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from datetime import datetime
 from shared.database import get_db
+
+def safe_object_id(id_str):
+    try:
+        return ObjectId(id_str)
+    except (InvalidId, TypeError):
+        return None
 
 class Message:
     """Chat messages between clients and trainers"""
@@ -43,12 +50,13 @@ class Message:
     
     @staticmethod
     def mark_as_read(message_ids):
-        """Mark messages as read"""
         db = get_db()
         collection = db.get_collection(Message.collection_name)
-        
+        valid_ids = [safe_object_id(mid) for mid in message_ids if safe_object_id(mid)]
+        if not valid_ids:
+            return 0
         result = collection.update_many(
-            {'_id': {'$in': [ObjectId(mid) for mid in message_ids]}},
+            {'_id': {'$in': valid_ids}},
             {'$set': {'is_read': True}}
         )
         return result.modified_count

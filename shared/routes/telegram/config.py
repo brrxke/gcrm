@@ -5,9 +5,6 @@
 import os
 from typing import Dict, List, Optional
 from dataclasses import dataclass
-import os
-from typing import Dict, List, Optional
-from dataclasses import dataclass
 
 # Загрузка переменных окружения
 def load_env():
@@ -39,7 +36,7 @@ class TelegramBotManager:
     
     def _load_bots_from_env(self):
         """Загрузка конфигурации ботов из переменных окружения"""
-        bot_names = os.getenv("TELEGRAM_BOT_NAMES", "").split(",")
+        bot_names = [name.strip() for name in os.getenv("TELEGRAM_BOT_NAMES", "").split(",")]
         
         for bot_name in bot_names:
             if not bot_name:

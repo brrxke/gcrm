@@ -13,7 +13,7 @@ def get_all_memberships():
         memberships = Membership.get_all()
         return jsonify({'memberships': memberships}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get memberships', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get memberships'}), 500
 
 @memberships_bp.route('/<membership_id>', methods=['GET'])
 def get_membership(membership_id):
@@ -26,7 +26,7 @@ def get_membership(membership_id):
         
         return jsonify({'membership': membership}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get membership', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get membership'}), 500
 
 @memberships_bp.route('/', methods=['POST'])
 @admin_required
@@ -47,7 +47,7 @@ def create_membership():
     except ValidationError as err:
         return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
     except Exception as e:
-        return jsonify({'error': 'Failed to create membership', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to create membership'}), 500
 
 @memberships_bp.route('/<membership_id>', methods=['PUT'])
 @admin_required
@@ -74,7 +74,7 @@ def update_membership(membership_id):
     except ValidationError as err:
         return jsonify({'error': 'Validation error', 'messages': err.messages}), 400
     except Exception as e:
-        return jsonify({'error': 'Failed to update membership', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to update membership'}), 500
 
 @memberships_bp.route('/<membership_id>', methods=['DELETE'])
 @admin_required
@@ -88,7 +88,7 @@ def delete_membership(membership_id):
         
         return jsonify({'message': 'Membership deactivated successfully'}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to delete membership', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to delete membership'}), 500
 
 @memberships_bp.route('/distribution', methods=['GET'])
 @admin_required
@@ -98,4 +98,4 @@ def get_membership_distribution():
         distribution = Membership.get_distribution()
         return jsonify({'distribution': distribution}), 200
     except Exception as e:
-        return jsonify({'error': 'Failed to get distribution', 'message': str(e)}), 500
+        return jsonify({'error': 'Failed to get distribution'}), 500
